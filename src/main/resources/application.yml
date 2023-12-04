@@ -1,4 +1,14 @@
 spring:
+  mail:
+    protocol: smtp
+    host: smtp.163.com
+    username: 15827753867@163.com
+    password: IJMVJXLGXCJNPWBQ
+  rabbitmq:
+    addresses: localhost
+    username: guest
+    password: guest
+    virtual-host: /
   security:
     filter:
       order: -100

@@ -38,29 +38,21 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeRequests(conf -> {
-                    conf
-                            .requestMatchers("/api/auth/**").permitAll()
-                            .anyRequest().authenticated();
-                })
-                .formLogin(conf -> {
-                    conf
-                            .loginProcessingUrl("/api/auth/login")
-                            .successHandler(this::onAuthenticationSuccess)
-                            .failureHandler(this::onAuthenticationFailure);
-                })
-                .logout(conf -> {
-                    conf
-                            .logoutUrl("/api/auth/logout")
-                            .logoutSuccessHandler(this::onLogoutSuccess);
-                })
+                .authorizeRequests(conf -> conf
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(conf -> conf
+                        .loginProcessingUrl("/api/auth/login")
+                        .successHandler(this::onAuthenticationSuccess)
+                        .failureHandler(this::onAuthenticationFailure))
+                .logout(conf -> conf
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler(this::onLogoutSuccess))
                 .exceptionHandling(conf->conf
                         .authenticationEntryPoint(this::onUnauthorized)
                         .accessDeniedHandler(this::onAccessDeny))
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(conf->{
-                    conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
+                .sessionManagement(conf-> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizeFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
