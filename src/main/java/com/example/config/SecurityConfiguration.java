@@ -39,7 +39,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeRequests(conf -> conf
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/**", "/error","api/user/**","/swagger-ui/**","/api-docs").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")
@@ -81,14 +81,21 @@ public class SecurityConfiguration {
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(RestBean.forbidden(accessDeniedException.getMessage()).asJsonString());
     }
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    /**
+     * 退出登录处理，将对应的Jwt令牌列入黑名单不再使用
+     * @param request 请求
+     * @param response 响应
+     * @param authentication 验证实体
+     * @throws IOException 可能的异常
+     */
+    private void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();
-        String authorization  = request.getHeader("Authorization");
-        if(utils.invalidateJwt(authorization)){
-            writer.write(RestBean.success().asJsonString());
-        }else {
-            writer.write(RestBean.failure(400,"退出登录失败").asJsonString());
+        String authorization = request.getHeader("Authorization");
+        if(utils.invalidateJwt(authorization)) {
+            writer.write(RestBean.success("退出登录成功").asJsonString());
+            return;
         }
+        writer.write(RestBean.failure(400, "退出登录失败").asJsonString());
     }
 }
