@@ -3,7 +3,7 @@ package com.example.entity.dto;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -19,9 +19,11 @@ public class SupplierAudits {
     String contact;
     String contact_number;
     String applicant;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",locale="zh")
     Date application_time;
     String application_status;
     String reviewer;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",locale="zh")
     Date review_time;
     String review_status;
 }

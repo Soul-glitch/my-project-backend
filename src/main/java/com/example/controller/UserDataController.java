@@ -109,7 +109,7 @@ public class UserDataController {
         account.setUsername(user.getUsername());
         account.setEmail(user.getEmail());
         account.setRole(user.getRole());
-        account.setRegisterTime(service.getOne(wrapper).getRegisterTime());
+        account.setRegister_time(service.getOne(wrapper).getRegister_time());
         account.setPassword(service.getOne(wrapper).getPassword());
         account.setId(service.getOne(wrapper).getId());
         if(service.update(account,wrapper)){
@@ -130,7 +130,7 @@ public class UserDataController {
             user.setId(account.getId());
             user.setRole(account.getRole());
             user.setEmail(account.getEmail());
-            user.setDate(account.getRegisterTime());
+            user.setDate(account.getRegister_time());
             user.setUsername(account.getUsername());
             users.add(user);
         });

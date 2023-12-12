@@ -21,7 +21,7 @@ public class Account implements BaseData {
     String email;
     String role;
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd")
-    Date registerTime;
+    Date register_time;
     public Account() {
 
     }
