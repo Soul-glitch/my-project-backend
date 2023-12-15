@@ -9,10 +9,8 @@ import com.example.service.AuditSuppliersService;
 import com.example.service.SupplierAuditsService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
@@ -41,8 +39,8 @@ public class SupplierAuditsController {
     }
 
     @PostMapping("/condition")
-    public RestBean<Page> condition(@RequestParam(required = false) int pageNum,
-                                    @RequestParam(required = false) int pageSize,
+    public RestBean<Page> condition(@RequestParam int pageNum,
+                                    @RequestParam int pageSize,
                                     @RequestBody SupplierAudits supplierAudits) {
         log.info("要查询的数据是 : {}",supplierAudits);
         Page<SupplierAudits> pageInfo = new Page<>(pageNum, pageSize);
@@ -57,7 +55,6 @@ public class SupplierAuditsController {
                 .like(SupplierAudits::getApplicant, supplierAudits.getApplicant())
                 .like(SupplierAudits::getApplication_time, applicationTime)
                 .like(SupplierAudits::getApplication_status, supplierAudits.getApplication_status())
-                .like(SupplierAudits::getReviewer, supplierAudits.getReviewer())
                 .like(SupplierAudits::getReview_time, reviewTime)
                 .like(SupplierAudits::getReview_status, supplierAudits.getReview_status())
                 .orderByAsc(SupplierAudits::getNumber);
@@ -65,6 +62,11 @@ public class SupplierAuditsController {
         return RestBean.success(pageInfo);
     }
 
+    /**
+     * 根据number查询AuditSuppliers数据
+     * @param number
+     * @return
+     */
     @GetMapping("/audits")
     public RestBean<AuditSuppliers> audits(@RequestParam int number){
         LambdaQueryWrapper<AuditSuppliers> wrapper = new LambdaQueryWrapper<>();
@@ -73,6 +75,12 @@ public class SupplierAuditsController {
         return RestBean.success(one);
     }
 
+    /**
+     * 修改审核状态
+     * @param text
+     * @param auditSuppliers
+     * @return
+     */
     @PostMapping("/opinions")
     public RestBean<String> opinions(@RequestParam String text,@RequestBody AuditSuppliers auditSuppliers){
         LambdaQueryWrapper<AuditSuppliers> auditSuppliersLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -85,11 +93,13 @@ public class SupplierAuditsController {
         }else if("overrule".equals(text)){
             one.setReview_status("驳回");
         }else {
+            log.info("未收到修改状态");
             return RestBean.forbidden("未收到修改状态");
         }
         boolean updateOne = auditSuppliersService.update(auditSuppliers, auditSuppliersLambdaQueryWrapper);
         boolean updateTwo = supplierAuditsService.update(one, supplierAuditsLambdaQueryWrapper);
         if(updateOne&&updateTwo){
+            log.info("修改审核状态数据成功 : {}",text);
             return RestBean.success("修改数据成功");
         }
         return RestBean.forbidden("服务内部错误");

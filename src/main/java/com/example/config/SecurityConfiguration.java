@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                                 "api/student/**",
                                 "api/suppliers/**",
                                 "/swagger-ui/**",
+                                "/api/outbound/**",
                                 "/api-docs").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(conf -> conf

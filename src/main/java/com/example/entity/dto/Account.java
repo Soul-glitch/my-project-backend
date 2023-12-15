@@ -25,4 +25,5 @@ public class Account implements BaseData {
     public Account() {
 
     }
+
 }
